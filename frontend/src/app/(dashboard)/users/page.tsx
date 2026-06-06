@@ -2,17 +2,20 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Plus, MoreHorizontal, X } from "lucide-react"
-
-const MOCK_USERS = [
-  { id: "usr-001", name: "Sarah Jenkins", email: "sarah.j@company.com", role: "ADMIN", status: "Active" },
-  { id: "usr-002", name: "John Davis", email: "john.d@company.com", role: "OFFICER", status: "Active" },
-  { id: "usr-003", name: "Emily Chen", email: "emily.c@company.com", role: "MANAGER", status: "Active" },
-  { id: "usr-004", name: "Michael Roberts", email: "m.roberts@company.com", role: "OFFICER", status: "Inactive" },
-];
+import { Search, Plus, MoreHorizontal, X, Loader2 } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import apiClient from "@/lib/apiClient"
 
 export default function UsersPage() {
   const [isAddOpen, setIsAddOpen] = useState(false)
+
+  const { data: users, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/users')
+      return data.data
+    }
+  })
 
   return (
     <div className="flex flex-col gap-6 relative">
@@ -52,7 +55,25 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="[&_tr:last-child]:border-0">
-              {MOCK_USERS.map((user, index) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={5} className="h-24 text-center text-destructive">
+                    Failed to load users.
+                  </td>
+                </tr>
+              ) : users?.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="h-24 text-center text-muted-foreground">
+                    No users found.
+                  </td>
+                </tr>
+              ) : users?.map((user: any, index: number) => (
                 <motion.tr 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

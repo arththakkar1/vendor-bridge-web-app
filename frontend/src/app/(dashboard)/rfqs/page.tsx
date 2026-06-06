@@ -110,6 +110,7 @@ export default function RFQsPage() {
 
   const handleQuoteSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!selectedRfq) return;
     submitQuoteMutation.mutate({
       rfqId: selectedRfq.id,
       amount: parseFloat(amount),
