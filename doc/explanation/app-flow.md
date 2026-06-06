@@ -38,6 +38,7 @@ sequenceDiagram
 The sidebar menu structure is role-aware and displays/hides links based on the active role selection.
 
 ### 2.1 Sidebar Navigation Links
+*   **Authentication** (Routes: `/login`, `/signup`, `/forgot-password`): Public routes for user onboarding and session creation. Layout is separated from the main application shell.
 *   **Dashboard** (Route: `/`): Shared overview dashboard. Displays different summary cards depending on active role permissions.
 *   **Vendors** (Route: `/vendors`): Supplier directory. Visible to `Admin` and `Procurement Officer`.
 *   **RFQs** (Route: `/rfqs`): List and creation. Officers see all RFQs + "+ New RFQ" wizard. Vendors only see RFQs they are invited to.

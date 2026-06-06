@@ -18,6 +18,13 @@ The frontend is built using a modern React ecosystem optimized for performance, 
 
 The application uses the Next.js App Router. Below is the mapping of the core routes, their purpose, and the components they contain:
 
+### `/(auth)` - Authentication
+- **Routes:** `/login`, `/signup`, `/forgot-password`
+- **Purpose:** Public-facing pages to handle user onboarding, session creation, and password recovery.
+- **Contains:**
+  - Login/Signup forms with Zod validation.
+  - Centered layouts independent of the main dashboard shell.
+
 ### `/(dashboard)` - Dashboard
 - **Route:** `/`
 - **Purpose:** The main landing area post-login, presenting a high-level overview.
