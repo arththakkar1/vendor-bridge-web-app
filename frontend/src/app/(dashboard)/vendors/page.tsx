@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { MOCK_VENDORS } from "@/lib/dummyData"
-import { Search, Plus, MoreHorizontal } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Filter } from "lucide-react"
 
 export default function VendorsPage() {
   return (
@@ -27,6 +27,9 @@ export default function VendorsPage() {
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
+          <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
+            <Filter className="mr-2 h-4 w-4" /> Filter
+          </button>
         </div>
         <div className="relative w-full overflow-auto">
           <table className="w-full caption-bottom text-sm">
@@ -35,6 +38,7 @@ export default function VendorsPage() {
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Company</th>
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Contact</th>
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Category</th>
+                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">GST Number</th>
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Rating</th>
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
                 <th className="h-12 px-4 align-middle font-medium text-muted-foreground w-[50px]"></th>
@@ -57,6 +61,7 @@ export default function VendorsPage() {
                     </div>
                   </td>
                   <td className="p-4 align-middle">{vendor.category}</td>
+                  <td className="p-4 align-middle text-muted-foreground font-mono text-xs">{vendor.gstNumber}</td>
                   <td className="p-4 align-middle">{vendor.rating} / 5.0</td>
                   <td className="p-4 align-middle">
                     <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${vendor.status === 'Active' ? 'border-transparent bg-primary text-primary-foreground hover:bg-primary/80' : 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>

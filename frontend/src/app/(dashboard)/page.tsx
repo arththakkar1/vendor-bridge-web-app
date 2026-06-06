@@ -1,8 +1,8 @@
 "use client"
 
 import { motion, Variants } from "framer-motion"
-import { Users, FileText, CheckSquare, ReceiptText, ArrowUpRight, ArrowDownRight, Briefcase, FileSignature } from "lucide-react"
-import { MOCK_RFQS, MOCK_APPROVALS, MOCK_VENDORS } from "@/lib/dummyData"
+import { Users, FileText, CheckSquare, ReceiptText, ArrowUpRight, ArrowDownRight, Briefcase, FileSignature, Plus } from "lucide-react"
+import { MOCK_RFQS, MOCK_APPROVALS, MOCK_VENDORS, MOCK_INVOICES } from "@/lib/dummyData"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function Dashboard() {
@@ -133,7 +133,7 @@ export default function Dashboard() {
             <ReceiptText className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="p-6 pt-0">
-            <div className="text-2xl font-bold">$1,234,567</div>
+            <div className="text-2xl font-bold">₹1,23,45,670</div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center text-emerald-500">
               <ArrowUpRight className="mr-1 h-3 w-3" />
               +12% vs last year
@@ -146,15 +146,22 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          {activeRole === "Vendor" ? "Supplier Portal" : "Dashboard"}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {activeRole === "Vendor" 
-            ? "Manage your assigned RFQs, submit quotes, and track purchase orders."
-            : "Overview of procurement activities and pending tasks."}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {activeRole === "Vendor" ? "Supplier Portal" : "Dashboard"}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {activeRole === "Vendor" 
+              ? "Manage your assigned RFQs, submit quotes, and track purchase orders."
+              : "Overview of procurement activities and pending tasks."}
+          </p>
+        </div>
+        {activeRole !== "Vendor" && activeRole !== "Manager" && (
+          <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90">
+            <Plus className="mr-2 h-4 w-4" /> Add Vendor
+          </button>
+        )}
       </div>
 
       <motion.div 
@@ -207,11 +214,28 @@ export default function Dashboard() {
                     <div key={approval.id} className="flex items-center justify-between rounded-lg border p-3">
                       <div className="space-y-1">
                         <p className="text-sm font-medium">{approval.rfqTitle}</p>
-                        <p className="text-xs text-muted-foreground">Needs Approval • ${approval.amount.toLocaleString("en-US")}</p>
+                        <p className="text-xs text-muted-foreground">Needs Approval • ₹{approval.amount.toLocaleString("en-IN")}</p>
                       </div>
                       <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-8 px-3 hover:bg-primary/90">
                         Review
                       </button>
+                    </div>
+                  ))}
+               </div>
+            </div>
+            
+            <div className="flex flex-col space-y-1.5 p-6 border-t mt-4">
+              <h3 className="font-semibold leading-none tracking-tight">Recent Invoices</h3>
+            </div>
+            <div className="p-6 pt-0">
+               <div className="space-y-4">
+                  {MOCK_INVOICES.map(invoice => (
+                    <div key={invoice.id} className="flex items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{invoice.invoiceNumber}</p>
+                        <p className="text-xs text-muted-foreground">{invoice.vendorName} • ₹{invoice.totalAmount.toLocaleString("en-IN")}</p>
+                      </div>
+                      <span className="text-xs font-semibold bg-secondary text-secondary-foreground px-2 py-1 rounded-full">{invoice.status}</span>
                     </div>
                   ))}
                </div>

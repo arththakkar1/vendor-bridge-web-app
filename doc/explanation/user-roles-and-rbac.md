@@ -36,3 +36,4 @@ In the frontend prototype, this RBAC model is simulated using a global React Con
 - When a user logs in, their selected role is stored in state.
 - The `Sidebar` component dynamically filters its `navItems` array to render *only* the permitted routes based on the active role's exact responsibilities.
 - The `Dashboard` (`page.tsx`) conditionally renders different UI components (e.g., metric cards, activity feeds) depending on the user's role.
+- Role-specific UI workflows (like the **Vendor's Quotation Submission Modal** or the **Manager's Approval Workflow**) are conditionally triggered based on the active role, demonstrating a full end-to-end simulation of the product features without a backend.

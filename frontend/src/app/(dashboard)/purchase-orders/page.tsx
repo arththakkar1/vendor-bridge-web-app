@@ -2,9 +2,13 @@
 
 import { motion } from "framer-motion"
 import { MOCK_PURCHASE_ORDERS, MOCK_VENDORS } from "@/lib/dummyData"
-import { Search, Printer, Download } from "lucide-react"
+import { Search, Printer, Download, Mail } from "lucide-react"
 
 export default function PurchaseOrdersPage() {
+  const simulateAction = (action: string, po: string) => {
+    alert(`Success! ${action} for ${po} triggered.`)
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -51,18 +55,33 @@ export default function PurchaseOrdersPage() {
                     <td className="p-4 align-middle font-medium">{po.poNumber}</td>
                     <td className="p-4 align-middle">{vendor?.companyName}</td>
                     <td className="p-4 align-middle">{po.date}</td>
-                    <td className="p-4 align-middle font-semibold">${po.totalAmount.toLocaleString("en-US")}</td>
+                    <td className="p-4 align-middle font-semibold">₹{po.totalAmount.toLocaleString("en-IN")}</td>
                     <td className="p-4 align-middle">
                       <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-primary text-primary-foreground">
                         {po.status}
                       </div>
                     </td>
                     <td className="p-4 align-middle flex gap-2">
-                      <button className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground h-8 w-8" title="Print">
+                      <button 
+                        onClick={() => simulateAction("Print", po.poNumber)}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground h-8 w-8" 
+                        title="Print"
+                      >
                         <Printer className="h-4 w-4" />
                       </button>
-                      <button className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground h-8 w-8" title="Download PDF">
+                      <button 
+                        onClick={() => simulateAction("Download PDF", po.poNumber)}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground h-8 w-8" 
+                        title="Download PDF"
+                      >
                         <Download className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => simulateAction("Email to Vendor", po.poNumber)}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground h-8 w-8" 
+                        title="Email Vendor"
+                      >
+                        <Mail className="h-4 w-4" />
                       </button>
                     </td>
                   </motion.tr>
