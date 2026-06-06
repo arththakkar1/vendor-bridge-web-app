@@ -30,8 +30,10 @@ Diátaxis splits technical documents into four distinct quadrants based on the u
 ```
 doc/
 ├── explanation/                           # Conceptual understanding (the "Why")
+│   ├── problem-statement.md               # Core challenges and the VendorBridge solution
 │   ├── prd.md                             # Product Requirements Document (Goals, Personas, Scope)
 │   ├── system-overview-and-architecture.md  # Technical Requirements Document (TRD, architecture)
+│   ├── frontend-architecture.md           # Next.js App Router, Tailwind, Framer Motion routing/tech spec
 │   ├── app-flow.md                        # App Flow & User Journeys (sequences, roles)
 │   ├── ui-ux-brief.md                     # UI/UX Brief (styling variables, print rules, animations)
 │   └── implementation-plan.md             # Phased rollout and integration milestones
@@ -52,8 +54,10 @@ doc/
 ## 3. Documentation Map
 
 ### 3.1 Explanation Documents
+*   [Problem Statement](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/problem-statement.md): Outlines the core pain points of traditional procurement workflows and how VendorBridge addresses them.
 *   [Product Requirements Document (PRD)](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/prd.md): Contains the core ERP product vision, user roles, functional scope of all 11 modules, and non-functional requirements.
 *   [Technical Requirements Document (TRD)](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/system-overview-and-architecture.md): System architecture design maps, technology choices (Next.js, Tailwind, Framer Motion, Node.js, PostgreSQL), and backend auth/session strategies.
+*   [Frontend Architecture](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/frontend-architecture.md): Details the Next.js, Tailwind CSS, Framer Motion, and TanStack Query setup, along with detailed App Router routing structure.
 *   [App Flow & User Journeys](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/app-flow.md): Sequence mapping of procurement lifecycle workflows, and navigation layout permissions.
 *   [UI/UX Design Brief](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/ui-ux-brief.md): Styling tokens, CSS layout grids, Framer Motion parameters, and document media print formats.
 *   [Milestone Implementation Plan](file:///Users/arththakkar/Documents/vendor-bridge-web-app/doc/explanation/implementation-plan.md): Outlines project phases (Setup, Core database, backend API routes, frontend views, and deployment).
