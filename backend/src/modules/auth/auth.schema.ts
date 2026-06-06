@@ -1,30 +1,22 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const UserRoleEnum = z.enum(["ADMIN", "OFFICER", "MANAGER", "VENDOR"]);
-
-export const SignUpSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  role: UserRoleEnum,
+export const registerSchema = z.object({
+  name: z.string().min(2).max(100),
+  email: z.string().email(),
+  password: z.string().min(8),
+  role: z.enum(['ADMIN', 'OFFICER', 'VENDOR', 'MANAGER']),
 });
 
-export const SignInSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-  rememberMe: z.boolean().optional(),
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
 });
 
-export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
 });
 
-export const ResetPasswordSchema = z.object({
-  token: z.string().min(1, "Token is required"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  newPassword: z.string().min(8),
 });
-
-export type SignUpInput = z.infer<typeof SignUpSchema>;
-export type SignInInput = z.infer<typeof SignInSchema>;
-export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
-export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;

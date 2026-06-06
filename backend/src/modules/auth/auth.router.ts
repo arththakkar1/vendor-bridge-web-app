@@ -1,21 +1,16 @@
-import { Router } from "express";
-import {
-  signUp,
-  signIn,
-  signOut,
-  forgotPassword,
-  resetPassword,
-  getMe,
-} from "./auth.controller.js";
-import { authenticateUser } from "../../middleware/auth.middleware.js";
+import { Router } from 'express';
+import { validate } from '../../middleware/validate.middleware';
+import { authenticate } from '../../middleware/auth.middleware';
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from './auth.schema';
+import * as ctrl from './auth.controller';
 
 const router = Router();
 
-router.post("/signup", signUp);
-router.post("/signin", signIn);
-router.post("/signout", signOut);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
-router.get("/me", authenticateUser, getMe);
+router.post('/register', validate(registerSchema), ctrl.registerHandler);
+router.post('/login', validate(loginSchema), ctrl.loginHandler);
+router.post('/logout', authenticate, ctrl.logoutHandler);
+router.get('/me', authenticate, ctrl.meHandler);
+router.post('/forgot-password', validate(forgotPasswordSchema), ctrl.forgotPasswordHandler);
+router.post('/reset-password', validate(resetPasswordSchema), ctrl.resetPasswordHandler);
 
 export default router;
