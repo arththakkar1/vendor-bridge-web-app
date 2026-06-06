@@ -207,7 +207,7 @@ export default function Dashboard() {
                     <div key={approval.id} className="flex items-center justify-between rounded-lg border p-3">
                       <div className="space-y-1">
                         <p className="text-sm font-medium">{approval.rfqTitle}</p>
-                        <p className="text-xs text-muted-foreground">Needs Approval • ${approval.amount.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">Needs Approval • ${approval.amount.toLocaleString("en-US")}</p>
                       </div>
                       <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-8 px-3 hover:bg-primary/90">
                         Review
