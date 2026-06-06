@@ -2,8 +2,14 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MOCK_USERS } from "@/lib/dummyData"
 import { Search, Plus, MoreHorizontal, X } from "lucide-react"
+
+const MOCK_USERS = [
+  { id: "usr-001", name: "Sarah Jenkins", email: "sarah.j@company.com", role: "ADMIN", status: "Active" },
+  { id: "usr-002", name: "John Davis", email: "john.d@company.com", role: "OFFICER", status: "Active" },
+  { id: "usr-003", name: "Emily Chen", email: "emily.c@company.com", role: "MANAGER", status: "Active" },
+  { id: "usr-004", name: "Michael Roberts", email: "m.roberts@company.com", role: "OFFICER", status: "Inactive" },
+];
 
 export default function UsersPage() {
   const [isAddOpen, setIsAddOpen] = useState(false)

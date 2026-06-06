@@ -36,7 +36,33 @@ export async function logoutHandler(_req: Request, res: Response) {
 }
 
 export async function meHandler(req: Request, res: Response) {
-  res.json({ success: true, user: req.user });
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const userRecord = await db.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, role: { select: { roleName: true } } }
+    });
+
+    if (!userRecord) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: userRecord.id,
+        name: userRecord.name,
+        email: userRecord.email,
+        role: userRecord.role.roleName
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 }
 
 export async function forgotPasswordHandler(req: Request, res: Response) {

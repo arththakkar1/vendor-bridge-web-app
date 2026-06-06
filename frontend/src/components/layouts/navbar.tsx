@@ -6,7 +6,8 @@ import { useAuth } from "@/contexts/auth-context"
 import { useState } from "react"
 
 export function Navbar() {
-  const { activeRole } = useAuth()
+  const { activeRole, user } = useAuth()
+  console.log(user)
   const [showNotifications, setShowNotifications] = useState(false)
 
   return (
@@ -68,12 +69,12 @@ export function Navbar() {
         <div className="flex items-center gap-2 border-l pl-4">
           <div className="flex flex-col items-end">
             <span className="text-sm font-medium leading-none">
-              {activeRole === "Vendor" ? "TechCorp User" : "Sarah Jenkins"}
+              {user?.name || "User"}
             </span>
             <span className="text-xs text-muted-foreground">{activeRole}</span>
           </div>
-          <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-            {activeRole === "Vendor" ? "TU" : "SJ"}
+          <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium uppercase">
+            {user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2) : "U"}
           </div>
         </div>
       </div>

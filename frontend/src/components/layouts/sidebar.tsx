@@ -3,9 +3,10 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, FileText, ClipboardList, CheckSquare, FileSignature, ReceiptText, Activity, UserCog, BarChart3 } from "lucide-react"
+import { LayoutDashboard, Users, FileText, ClipboardList, CheckSquare, FileSignature, ReceiptText, Activity, UserCog, BarChart3, LogOut } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { Role } from "@/lib/dummyData"
+
+type Role = 'ADMIN' | 'OFFICER' | 'MANAGER' | 'VENDOR';
 
 // Define base links
 const ALL_LINKS = [
@@ -23,24 +24,24 @@ const ALL_LINKS = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { activeRole } = useAuth()
+  const { activeRole, logout } = useAuth()
 
   // Filter links based on strictly defined role responsibilities
-  const getNavItems = (role: Role) => {
+  const getNavItems = (role: Role | null) => {
     switch (role) {
-      case "Admin":
+      case "ADMIN":
         return ALL_LINKS.filter(item => 
           ["Dashboard", "Users", "Vendors", "Reports & Analytics", "Activity Logs"].includes(item.name)
         )
-      case "Procurement Officer":
+      case "OFFICER":
         return ALL_LINKS.filter(item => 
           ["Dashboard", "RFQs", "Quotations", "Purchase Orders", "Invoices"].includes(item.name)
         )
-      case "Vendor":
+      case "VENDOR":
         return ALL_LINKS.filter(item => 
           ["Dashboard", "RFQs", "Quotations", "Purchase Orders"].includes(item.name)
         )
-      case "Manager":
+      case "MANAGER":
         return ALL_LINKS.filter(item => 
           ["Dashboard", "Approvals", "Activity Logs", "Reports & Analytics"].includes(item.name)
         )
@@ -77,6 +78,15 @@ export function Sidebar() {
             )
           })}
         </nav>
+      </div>
+      <div className="mt-auto p-4 border-t">
+        <button
+          onClick={logout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-primary"
+        >
+          <LogOut className="h-4 w-4" />
+          Log Out
+        </button>
       </div>
     </div>
   )

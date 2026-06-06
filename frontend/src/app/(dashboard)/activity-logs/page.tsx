@@ -1,10 +1,19 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MOCK_ACTIVITY_LOGS } from "@/lib/dummyData"
-import { Search, History, Filter } from "lucide-react"
+import { Search, History, Filter, Loader2 } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import apiClient from "@/lib/apiClient"
 
 export default function ActivityLogsPage() {
+  const { data: logsData, isLoading } = useQuery({
+    queryKey: ['activity-logs'],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/activity-logs')
+      return data.logs || []
+    }
+  })
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -29,46 +38,55 @@ export default function ActivityLogsPage() {
           </div>
         </div>
         <div className="relative w-full overflow-auto">
-          <table className="w-full caption-bottom text-sm">
-            <thead className="[&_tr]:border-b">
-              <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Timestamp</th>
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Action</th>
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Performed By</th>
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Entity</th>
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-              </tr>
-            </thead>
-            <tbody className="[&_tr:last-child]:border-0">
-              {MOCK_ACTIVITY_LOGS.map((log, index) => (
-                <motion.tr 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  key={log.id} 
-                  className="border-b transition-colors hover:bg-muted/50"
-                >
-                  <td className="p-4 align-middle text-muted-foreground whitespace-nowrap">{log.timestamp}</td>
-                  <td className="p-4 align-middle font-medium flex items-center gap-2">
-                    <History className="h-4 w-4 text-muted-foreground" />
-                    {log.action}
-                  </td>
-                  <td className="p-4 align-middle">{log.performedBy}</td>
-                  <td className="p-4 align-middle">
-                    <div className="flex flex-col">
-                      <span>{log.entityType}</span>
-                      <span className="text-xs text-muted-foreground">{log.entityId}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 align-middle">
-                    <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-primary text-primary-foreground">
-                      {log.status}
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+          {isLoading ? (
+            <div className="flex justify-center items-center p-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <table className="w-full caption-bottom text-sm">
+              <thead className="[&_tr]:border-b">
+                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Timestamp</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Action</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Performed By</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Entity ID</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Details</th>
+                </tr>
+              </thead>
+              <tbody className="[&_tr:last-child]:border-0">
+                {logsData?.length > 0 ? logsData.map((log: any, index: number) => (
+                  <motion.tr 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    key={log.id} 
+                    className="border-b transition-colors hover:bg-muted/50"
+                  >
+                    <td className="p-4 align-middle text-muted-foreground whitespace-nowrap">
+                      {new Date(log.timestamp).toLocaleString()}
+                    </td>
+                    <td className="p-4 align-middle font-medium flex items-center gap-2">
+                      <History className="h-4 w-4 text-muted-foreground" />
+                      {log.actionType.replace(/_/g, ' ')}
+                    </td>
+                    <td className="p-4 align-middle">{log.user?.name || log.userId}</td>
+                    <td className="p-4 align-middle">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">{log.entityId}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 align-middle text-muted-foreground">
+                      {log.details}
+                    </td>
+                  </motion.tr>
+                )) : (
+                  <tr>
+                    <td colSpan={5} className="p-4 text-center text-muted-foreground">No activity logs found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
