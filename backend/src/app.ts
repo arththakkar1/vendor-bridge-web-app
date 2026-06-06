@@ -15,6 +15,7 @@ import purchaseOrderRouter from './modules/purchase-orders/purchase-orders.route
 import invoiceRouter from './modules/invoices/invoices.router';
 import activityLogRouter from './modules/activity-logs/activity-logs.router';
 import analyticsRouter from './modules/analytics/analytics.router';
+import usersRouter from './modules/users/users.router';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -33,10 +34,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Rate limiting on auth
+// Rate limiting on auth (increased for dev usage)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 15,
+  max: 1000,
   message: { success: false, message: 'Too many requests. Try again in 15 minutes.' },
 });
 
@@ -50,6 +51,7 @@ app.use('/api/v1/purchase-orders', purchaseOrderRouter);
 app.use('/api/v1/invoices', invoiceRouter);
 app.use('/api/v1/activity-logs', activityLogRouter);
 app.use('/api/v1/analytics', analyticsRouter);
+app.use('/api/v1/users', usersRouter);
 
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

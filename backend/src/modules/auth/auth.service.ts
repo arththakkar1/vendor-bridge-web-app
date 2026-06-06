@@ -4,6 +4,7 @@ import { db } from '../../config/database';
 import { env } from '../../config/env';
 import { logAction } from '../../services/audit.service';
 import { SystemRole } from '@prisma/client';
+import { generateVendorCode } from '../../utils/generateNumber';
 
 export async function register(data: {
   name: string;
@@ -28,6 +29,22 @@ export async function register(data: {
     },
     include: { role: true },
   });
+
+  if (role.roleName === 'VENDOR') {
+    const vendorCode = await generateVendorCode();
+    await db.vendor.create({
+      data: {
+        vendorCode,
+        companyName: `${data.name} Company`,
+        contactName: data.name,
+        email: data.email,
+        phone: '0000000000',
+        gstNumber: `GST-${Date.now().toString().slice(-6)}`,
+        category: 'General',
+        address: 'Pending Address',
+      }
+    });
+  }
 
   await logAction('USER_REGISTERED', `User ${user.email} registered with role ${data.role}.`, user.id);
 
