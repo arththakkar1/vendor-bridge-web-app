@@ -1,291 +1,83 @@
-import { Request, Response, NextFunction } from "express";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import { prisma } from "../../config/prisma.js";
-import { env } from "../../config/env.js";
-import {
-  SignUpSchema,
-  SignInSchema,
-  ForgotPasswordSchema,
-  ResetPasswordSchema,
-} from "./auth.schema.js";
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import * as authService from './auth.service';
+import { db } from '../../config/database';
+import { logAction } from '../../services/audit.service';
 
-// Helper to set session cookie
-const setSessionCookie = (res: Response, token: string, rememberMe: boolean) => {
-  const maxAge = rememberMe
-    ? 30 * 24 * 60 * 60 * 1000 // 30 days
-    : 7 * 24 * 60 * 60 * 1000;  // 7 days
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge,
-  });
-};
-
-export const signUp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export async function registerHandler(req: Request, res: Response) {
   try {
-    const validatedData = SignUpSchema.parse(req.body);
-
-    const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email.toLowerCase() },
-    });
-
-    if (existingUser) {
-      res.status(409).json({
-        success: false,
-        message: "A user with this email address already exists.",
-      });
-      return;
-    }
-
-    const passwordHash = await bcryptjs.hash(validatedData.password, 10);
-
-    const newUser = await prisma.user.create({
-      data: {
-        fullName: validatedData.fullName,
-        email: validatedData.email.toLowerCase(),
-        passwordHash,
-        role: validatedData.role,
-      },
-    });
-
-    // Generate token
-    const token = jwt.sign(
-      {
-        userId: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-        fullName: newUser.fullName,
-      },
-      env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    // Set cookie
-    setSessionCookie(res, token, false);
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully.",
-      user: {
-        id: newUser.id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        role: newUser.role,
-        createdAt: newUser.createdAt,
-      },
-    });
-  } catch (error) {
-    next(error);
+    const user = await authService.register(req.body);
+    res.status(201).json({ success: true, user });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
   }
-};
+}
 
-export const signIn = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export async function loginHandler(req: Request, res: Response) {
   try {
-    const validatedData = SignInSchema.parse(req.body);
-    const rememberMe = !!validatedData.rememberMe;
-
-    const user = await prisma.user.findUnique({
-      where: { email: validatedData.email.toLowerCase() },
-    });
-
-    if (!user) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-      return;
-    }
-
-    const isPasswordValid = await bcryptjs.compare(
-      validatedData.password,
-      user.passwordHash
-    );
-
-    if (!isPasswordValid) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-      return;
-    }
-
-    // Generate token
-    const expiresIn = rememberMe ? "30d" : "7d";
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-        fullName: user.fullName,
-      },
-      env.JWT_SECRET,
-      { expiresIn }
-    );
-
-    // Set cookie
-    setSessionCookie(res, token, rememberMe);
-
-    res.status(200).json({
-      success: true,
-      message: "Signed in successfully.",
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const signOut = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    res.clearCookie("token", {
+    const { token, user } = await authService.login(req.body.email, req.body.password);
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 86400000,
+      path: '/',
     });
-
-    res.status(200).json({
-      success: true,
-      message: "Signed out successfully.",
-    });
-  } catch (error) {
-    next(error);
+    res.json({ success: true, user });
+  } catch (err: any) {
+    res.status(401).json({ success: false, message: err.message });
   }
-};
+}
 
-export const forgotPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export async function logoutHandler(_req: Request, res: Response) {
+  res.clearCookie('token', { path: '/' });
+  res.json({ success: true, message: 'Logged out successfully.' });
+}
+
+export async function meHandler(req: Request, res: Response) {
+  res.json({ success: true, user: req.user });
+}
+
+export async function forgotPasswordHandler(req: Request, res: Response) {
   try {
-    const validatedData = ForgotPasswordSchema.parse(req.body);
+    const { email } = req.body;
+    const user = await db.user.findUnique({ where: { email } });
+    // Always return 200 so email enumeration is not possible
+    if (!user) return res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
 
-    const user = await prisma.user.findUnique({
-      where: { email: validatedData.email.toLowerCase() },
-    });
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    // To prevent user enumeration, we return success even if user isn't found.
-    // However, we include the token in response when user exists for development/testing ease.
-    if (!user) {
-      res.status(200).json({
-        success: true,
-        message: "If that email exists in our system, we have sent password reset instructions.",
-      });
-      return;
+    await db.passwordResetToken.create({ data: { userId: user.id, token, expiresAt } });
+
+    // Send email with reset link (wire up email.service.ts)
+    // await emailService.send({ to: email, subject: 'Reset your VendorBridge password',
+    //   html: `<a href="${process.env.FRONTEND_URL}/reset-password?token=${token}">Reset Password</a>` });
+
+    await logAction('PASSWORD_RESET_REQUESTED', `Reset token issued for ${email}.`);
+    res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+}
+
+export async function resetPasswordHandler(req: Request, res: Response) {
+  try {
+    const { token, newPassword } = req.body;
+    const record = await db.passwordResetToken.findUnique({ where: { token } });
+
+    if (!record || record.used || record.expiresAt < new Date()) {
+      return res.status(400).json({ success: false, message: 'Token is invalid or expired.' });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await db.user.update({ where: { id: record.userId }, data: { passwordHash } });
+    await db.passwordResetToken.update({ where: { id: record.id }, data: { used: true } });
+    await logAction('PASSWORD_RESET_COMPLETED', `Password reset for user ${record.userId}.`, record.userId);
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        resetToken,
-        resetTokenExpiry,
-      },
-    });
-
-    // Log the link to the console for development
-    console.log(`[Dev] Password Reset Token: ${resetToken}`);
-    console.log(`[Dev] Password Reset Link: http://localhost:3000/reset-password?token=${resetToken}`);
-
-    res.status(200).json({
-      success: true,
-      message: "If that email exists in our system, we have sent password reset instructions.",
-      // In development, return the token directly so the frontend / APIs can test easily without actual emails
-      token: resetToken,
-    });
-  } catch (error) {
-    next(error);
+    res.json({ success: true, message: 'Password reset successfully. Please log in.' });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
   }
-};
-
-export const resetPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const validatedData = ResetPasswordSchema.parse(req.body);
-
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: validatedData.token,
-        resetTokenExpiry: {
-          gt: new Date(),
-        },
-      },
-    });
-
-    if (!user) {
-      res.status(400).json({
-        success: false,
-        message: "Password reset token is invalid or has expired.",
-      });
-      return;
-    }
-
-    const passwordHash = await bcryptjs.hash(validatedData.password, 10);
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        passwordHash,
-        resetToken: null,
-        resetTokenExpiry: null,
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Password has been reset successfully. You can now sign in with your new password.",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getMe = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    if (!req.user) {
-      res.status(401).json({
-        success: false,
-        message: "Not authenticated.",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      user: req.user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+}
