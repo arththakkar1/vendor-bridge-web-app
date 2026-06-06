@@ -32,7 +32,7 @@ export default function ApprovalsPage() {
                 </div>
               </div>
               <div className="flex flex-col md:items-end gap-2">
-                <div className="text-2xl font-bold">${approval.amount.toLocaleString()}</div>
+                <div className="text-2xl font-bold">${approval.amount.toLocaleString("en-US")}</div>
                 <div className="flex gap-2 mt-2 md:mt-0">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background h-9 px-4 py-2 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-colors">
                     <XSquare className="mr-2 h-4 w-4" /> Reject

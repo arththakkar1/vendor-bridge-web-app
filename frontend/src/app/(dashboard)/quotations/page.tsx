@@ -56,7 +56,7 @@ export default function QuotationsPage() {
                     <td className="p-4 align-middle font-medium">{quote.id.toUpperCase()}</td>
                     <td className="p-4 align-middle">{rfq?.rfqNumber}</td>
                     <td className="p-4 align-middle">{vendor?.companyName}</td>
-                    <td className="p-4 align-middle font-semibold">${quote.amount.toLocaleString()}</td>
+                    <td className="p-4 align-middle font-semibold">${quote.amount.toLocaleString("en-US")}</td>
                     <td className="p-4 align-middle">{quote.deliveryTime}</td>
                     <td className="p-4 align-middle">
                       <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${quote.status === 'Under Review' ? 'border-transparent bg-secondary text-secondary-foreground' : 'border-transparent bg-primary text-primary-foreground hover:bg-primary/80'}`}>

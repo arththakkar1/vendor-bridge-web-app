@@ -49,7 +49,7 @@ export default function InvoicesPage() {
                   <td className="p-4 align-middle font-medium">{invoice.invoiceNumber}</td>
                   <td className="p-4 align-middle">{invoice.vendorName}</td>
                   <td className="p-4 align-middle">{invoice.dueDate}</td>
-                  <td className="p-4 align-middle font-semibold">${invoice.totalAmount.toLocaleString()}</td>
+                  <td className="p-4 align-middle font-semibold">${invoice.totalAmount.toLocaleString("en-US")}</td>
                   <td className="p-4 align-middle">
                     <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
                       {invoice.status}

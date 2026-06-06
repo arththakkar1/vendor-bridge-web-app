@@ -51,7 +51,7 @@ export default function PurchaseOrdersPage() {
                     <td className="p-4 align-middle font-medium">{po.poNumber}</td>
                     <td className="p-4 align-middle">{vendor?.companyName}</td>
                     <td className="p-4 align-middle">{po.date}</td>
-                    <td className="p-4 align-middle font-semibold">${po.totalAmount.toLocaleString()}</td>
+                    <td className="p-4 align-middle font-semibold">${po.totalAmount.toLocaleString("en-US")}</td>
                     <td className="p-4 align-middle">
                       <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-primary text-primary-foreground">
                         {po.status}

@@ -1,10 +1,12 @@
 "use client"
 
 import { ThemeToggle } from "@/components/theme-toggle"
-import { DUMMY_USER } from "@/lib/dummyData"
 import { Bell, Search } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
 
 export function Navbar() {
+  const { activeRole } = useAuth()
+
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
       <div className="w-full flex-1">
@@ -21,17 +23,21 @@ export function Navbar() {
       </div>
       <div className="flex items-center gap-4">
         <ThemeToggle />
+        
         <button className="relative h-8 w-8 rounded-full border bg-muted flex items-center justify-center hover:bg-accent transition-colors">
           <Bell className="h-4 w-4" />
           <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive"></span>
         </button>
+        
         <div className="flex items-center gap-2 border-l pl-4">
           <div className="flex flex-col items-end">
-            <span className="text-sm font-medium leading-none">{DUMMY_USER.name}</span>
-            <span className="text-xs text-muted-foreground">{DUMMY_USER.role}</span>
+            <span className="text-sm font-medium leading-none">
+              {activeRole === "Vendor" ? "TechCorp User" : "Sarah Jenkins"}
+            </span>
+            <span className="text-xs text-muted-foreground">{activeRole}</span>
           </div>
           <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-            SJ
+            {activeRole === "Vendor" ? "TU" : "SJ"}
           </div>
         </div>
       </div>
