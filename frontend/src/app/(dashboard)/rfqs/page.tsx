@@ -15,6 +15,9 @@ export default function RFQsPage() {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false)
   const [selectedRfq, setSelectedRfq] = useState<any>(null)
 
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("All")
+
   // Create RFQ State
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -125,6 +128,14 @@ export default function RFQsPage() {
     )
   }
 
+  const filteredRfqs = rfqsData?.filter((rfq: any) => {
+    const matchesSearch = rfq.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          rfq.rfqNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          rfq.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || rfq.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
@@ -148,12 +159,28 @@ export default function RFQsPage() {
           <input
             type="search"
             placeholder="Search RFQs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full appearance-none bg-background pl-8 shadow-sm border rounded-md h-10 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </div>
-        <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-          <Filter className="mr-2 h-4 w-4" /> Filter
-        </button>
+        <div className="relative">
+          <Filter className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="inline-flex appearance-none items-center justify-center rounded-md text-sm font-medium border bg-background h-10 pl-9 pr-8 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Published">Published</option>
+            <option value="Draft">Draft</option>
+            <option value="Closed">Closed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          <div className="absolute right-3 top-3.5 pointer-events-none">
+            <svg className="h-3 w-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+        </div>
       </div>
 
       {rfqsLoading ? (
@@ -162,7 +189,7 @@ export default function RFQsPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {rfqsData?.length > 0 ? rfqsData.map((rfq: any, index: number) => (
+          {filteredRfqs?.length > 0 ? filteredRfqs.map((rfq: any, index: number) => (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

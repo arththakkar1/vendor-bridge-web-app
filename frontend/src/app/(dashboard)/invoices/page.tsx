@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Search, Mail, FileDown, Printer, Loader2, Check } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import apiClient from "@/lib/apiClient"
 
 export default function InvoicesPage() {
+  const [searchTerm, setSearchTerm] = useState("")
   const queryClient = useQueryClient()
 
   const { data: invoicesData, isLoading } = useQuery({
@@ -49,6 +51,13 @@ export default function InvoicesPage() {
     })
   }
 
+  const filteredInvoices = invoicesData?.filter((invoice: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    const invNumber = invoice.invoiceNumber?.toLowerCase() || '';
+    const vendorName = invoice.purchaseOrder?.vendor?.companyName?.toLowerCase() || '';
+    return invNumber.includes(searchLower) || vendorName.includes(searchLower);
+  });
+
   return (
     <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
@@ -65,6 +74,8 @@ export default function InvoicesPage() {
             <input
               type="search"
               placeholder="Search invoices..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
@@ -87,7 +98,7 @@ export default function InvoicesPage() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {invoicesData?.length > 0 ? invoicesData.map((invoice: any, index: number) => (
+                {filteredInvoices?.length > 0 ? filteredInvoices.map((invoice: any, index: number) => (
                   <motion.tr 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Search, History, Filter, Loader2 } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import apiClient from "@/lib/apiClient"
 
 export default function ActivityLogsPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [actionFilter, setActionFilter] = useState("All")
   const { data: logsData, isLoading } = useQuery({
     queryKey: ['activity-logs'],
     queryFn: async () => {
@@ -14,6 +17,19 @@ export default function ActivityLogsPage() {
     }
   })
 
+  const filteredLogs = logsData?.filter((log: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    const action = log.actionType?.toLowerCase() || '';
+    const user = log.user?.name?.toLowerCase() || '';
+    const entityId = log.entityId?.toLowerCase() || '';
+    const details = log.details?.toLowerCase() || '';
+    
+    const matchesSearch = action.includes(searchLower) || user.includes(searchLower) || entityId.includes(searchLower) || details.includes(searchLower);
+    const matchesAction = actionFilter === "All" || log.actionType === actionFilter;
+    
+    return matchesSearch && matchesAction;
+  });
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -21,9 +37,6 @@ export default function ActivityLogsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Activity Logs</h1>
           <p className="text-muted-foreground mt-1">Immutable audit ledger of all system activities.</p>
         </div>
-        <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-          <Filter className="mr-2 h-4 w-4" /> Filter Logs
-        </button>
       </div>
 
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
@@ -33,8 +46,30 @@ export default function ActivityLogsPage() {
             <input
               type="search"
               placeholder="Search logs by action, user, or ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
+          </div>
+          <div className="relative">
+            <Filter className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <select
+              value={actionFilter}
+              onChange={(e) => setActionFilter(e.target.value)}
+              className="inline-flex appearance-none items-center justify-center rounded-md text-sm font-medium border bg-background h-9 pl-9 pr-8 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+            >
+              <option value="All">All Actions</option>
+              <option value="LOGIN">Login</option>
+              <option value="CREATE_RFQ">Create RFQ</option>
+              <option value="SUBMIT_QUOTE">Submit Quote</option>
+              <option value="APPROVE_QUOTE">Approve Quote</option>
+              <option value="GENERATE_PO">Generate PO</option>
+              <option value="GENERATE_INVOICE">Generate Invoice</option>
+              <option value="PAY_INVOICE">Pay Invoice</option>
+            </select>
+            <div className="absolute right-3 top-3 pointer-events-none">
+              <svg className="h-3 w-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
           </div>
         </div>
         <div className="relative w-full overflow-auto">
@@ -54,7 +89,7 @@ export default function ActivityLogsPage() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {logsData?.length > 0 ? logsData.map((log: any, index: number) => (
+                {filteredLogs?.length > 0 ? filteredLogs.map((log: any, index: number) => (
                   <motion.tr 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}

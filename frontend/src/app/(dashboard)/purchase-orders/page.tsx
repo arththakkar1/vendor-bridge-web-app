@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Search, Printer, Download, Mail, Loader2 } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import apiClient from "@/lib/apiClient"
 
 export default function PurchaseOrdersPage() {
+  const [searchTerm, setSearchTerm] = useState("")
   const { data: purchaseOrdersData, isLoading } = useQuery({
     queryKey: ['purchase-orders'],
     queryFn: async () => {
@@ -23,6 +25,13 @@ export default function PurchaseOrdersPage() {
     alert(`Action: ${action} for ${po} triggered.`)
   }
 
+  const filteredPOs = purchaseOrdersData?.filter((po: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    const poNumber = po.poNumber?.toLowerCase() || '';
+    const vendorName = po.vendor?.companyName?.toLowerCase() || '';
+    return poNumber.includes(searchLower) || vendorName.includes(searchLower);
+  });
+
   return (
     <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
@@ -39,6 +48,8 @@ export default function PurchaseOrdersPage() {
             <input
               type="search"
               placeholder="Search POs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
@@ -61,7 +72,7 @@ export default function PurchaseOrdersPage() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {purchaseOrdersData?.length > 0 ? purchaseOrdersData.map((po: any, index: number) => (
+                {filteredPOs?.length > 0 ? filteredPOs.map((po: any, index: number) => (
                   <motion.tr 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

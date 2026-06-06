@@ -8,6 +8,7 @@ import apiClient from "@/lib/apiClient"
 
 export default function UsersPage() {
   const [isAddOpen, setIsAddOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['users'],
@@ -16,6 +17,14 @@ export default function UsersPage() {
       return data.data
     }
   })
+
+  const filteredUsers = users?.filter((user: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    const name = user.name?.toLowerCase() || '';
+    const email = user.email?.toLowerCase() || '';
+    const role = user.role?.toLowerCase() || '';
+    return name.includes(searchLower) || email.includes(searchLower) || role.includes(searchLower);
+  });
 
   return (
     <div className="flex flex-col gap-6 relative">
@@ -39,6 +48,8 @@ export default function UsersPage() {
             <input
               type="search"
               placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
@@ -67,13 +78,13 @@ export default function UsersPage() {
                     Failed to load users.
                   </td>
                 </tr>
-              ) : users?.length === 0 ? (
+              ) : filteredUsers?.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="h-24 text-center text-muted-foreground">
                     No users found.
                   </td>
                 </tr>
-              ) : users?.map((user: any, index: number) => (
+              ) : filteredUsers?.map((user: any, index: number) => (
                 <motion.tr 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

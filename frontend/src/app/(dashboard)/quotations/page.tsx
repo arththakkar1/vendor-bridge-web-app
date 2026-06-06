@@ -12,6 +12,7 @@ export default function QuotationsPage() {
   const queryClient = useQueryClient()
   const [selectedQuotes, setSelectedQuotes] = useState<string[]>([])
   const [isCompareOpen, setIsCompareOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const { data: quotationsData, isLoading } = useQuery({
     queryKey: ['quotations'],
@@ -51,6 +52,14 @@ export default function QuotationsPage() {
     selectQuoteMutation.mutate(id)
   }
 
+  const filteredQuotations = quotationsData?.filter((quote: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    const vendorName = quote.vendor?.companyName?.toLowerCase() || '';
+    const rfqTitle = quote.rfq?.title?.toLowerCase() || '';
+    const quoteNumber = quote.quotationNumber?.toLowerCase() || '';
+    return vendorName.includes(searchLower) || rfqTitle.includes(searchLower) || quoteNumber.includes(searchLower);
+  });
+
   return (
     <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
@@ -67,6 +76,8 @@ export default function QuotationsPage() {
             <input
               type="search"
               placeholder="Search quotations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
@@ -97,7 +108,7 @@ export default function QuotationsPage() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {quotationsData?.length > 0 ? quotationsData.map((quote: any, index: number) => {
+                {filteredQuotations?.length > 0 ? filteredQuotations.map((quote: any, index: number) => {
                   const amount = parseFloat(quote.amount);
                   const isLowest = amount === minAmount && amount > 0;
                   const isSelected = selectedQuotes.includes(quote.id)

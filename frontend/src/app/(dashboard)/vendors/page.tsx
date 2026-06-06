@@ -10,6 +10,9 @@ export default function VendorsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false)
   const queryClient = useQueryClient()
 
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("All")
+
   // Form state
   const [companyName, setCompanyName] = useState("")
   const [contactName, setContactName] = useState("")
@@ -64,6 +67,14 @@ export default function VendorsPage() {
     })
   }
 
+  const filteredVendors = vendorsData?.filter((vendor: any) => {
+    const matchesSearch = vendor.companyName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          vendor.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          vendor.vendorCode.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || vendor.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
@@ -86,12 +97,27 @@ export default function VendorsPage() {
             <input
               type="search"
               placeholder="Search vendors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full appearance-none bg-background pl-8 shadow-none border rounded-md h-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
-          <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-            <Filter className="mr-2 h-4 w-4" /> Filter
-          </button>
+          <div className="relative">
+            <Filter className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="inline-flex appearance-none items-center justify-center rounded-md text-sm font-medium border bg-background h-9 pl-9 pr-8 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+            >
+              <option value="All">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Blocked">Blocked</option>
+            </select>
+            <div className="absolute right-3 top-3 pointer-events-none">
+              <svg className="h-3 w-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
         </div>
         <div className="relative w-full overflow-auto">
           {isLoading ? (
@@ -112,7 +138,7 @@ export default function VendorsPage() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {vendorsData?.length > 0 ? vendorsData.map((vendor: any, index: number) => (
+                {filteredVendors?.length > 0 ? filteredVendors.map((vendor: any, index: number) => (
                   <motion.tr 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
