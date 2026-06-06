@@ -42,3 +42,10 @@ export const MOCK_ACTIVITY_LOGS = [
   { id: "log-003", action: "Published RFQ", entityType: "RFQ", entityId: "rfq-001", performedBy: "Procurement Officer", timestamp: "2026-06-04 10:15:00", status: "Success" },
   { id: "log-004", action: "Vendor Registered", entityType: "Vendor", entityId: "v-003", performedBy: "System", timestamp: "2026-06-01 08:00:00", status: "Success" },
 ];
+
+export const MOCK_USERS = [
+  { id: "usr-001", name: "Sarah Jenkins", email: "sarah.j@company.com", role: "Admin", status: "Active" },
+  { id: "usr-002", name: "John Davis", email: "john.d@company.com", role: "Procurement Officer", status: "Active" },
+  { id: "usr-003", name: "Emily Chen", email: "emily.c@company.com", role: "Manager", status: "Active" },
+  { id: "usr-004", name: "Michael Roberts", email: "m.roberts@company.com", role: "Procurement Officer", status: "Inactive" },
+];
