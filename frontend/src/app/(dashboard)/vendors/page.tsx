@@ -1,18 +1,24 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { MOCK_VENDORS } from "@/lib/dummyData"
-import { Search, Plus, MoreHorizontal, Filter } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Filter, X } from "lucide-react"
 
 export default function VendorsPage() {
+  const [isAddOpen, setIsAddOpen] = useState(false)
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Vendors</h1>
           <p className="text-muted-foreground mt-1">Manage your suppliers and vendors.</p>
         </div>
-        <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90">
+        <button 
+          onClick={() => setIsAddOpen(true)}
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90"
+        >
           <Plus className="mr-2 h-4 w-4" /> Add Vendor
         </button>
       </div>
@@ -79,6 +85,72 @@ export default function VendorsPage() {
           </table>
         </div>
       </div>
+
+      {/* Add Vendor Modal */}
+      <AnimatePresence>
+        {isAddOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card text-card-foreground border rounded-xl shadow-lg w-full max-w-lg flex flex-col overflow-hidden max-h-[90vh]"
+            >
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-xl font-semibold">Add New Vendor</h2>
+                <button onClick={() => setIsAddOpen(false)} className="rounded-full p-1 hover:bg-muted"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="p-6 overflow-y-auto space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Company Name</label>
+                  <input type="text" placeholder="e.g. TechCorp Electronics" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Contact Person</label>
+                    <input type="text" placeholder="e.g. John Smith" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email Address</label>
+                    <input type="email" placeholder="john@example.com" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Phone Number</label>
+                    <input type="tel" placeholder="+91 98765 43210" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">GST Number</label>
+                    <input type="text" placeholder="e.g. 27ABCDE1234F1Z5" className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono uppercase" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Category</label>
+                  <select className="w-full rounded-md border bg-background px-3 py-2 text-sm">
+                    <option>Hardware</option>
+                    <option>Software</option>
+                    <option>Office Supplies</option>
+                    <option>Services</option>
+                  </select>
+                </div>
+              </div>
+              <div className="p-6 border-t flex justify-end gap-2 bg-muted/20 mt-auto">
+                <button onClick={() => setIsAddOpen(false)} className="rounded-md px-4 py-2 text-sm font-medium border hover:bg-accent">Cancel</button>
+                <button 
+                  onClick={() => {
+                    alert("Success! Vendor added successfully.")
+                    setIsAddOpen(false)
+                  }} 
+                  className="rounded-md px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Create Vendor
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

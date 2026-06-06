@@ -4,6 +4,7 @@ import { motion, Variants } from "framer-motion"
 import { Users, FileText, CheckSquare, ReceiptText, ArrowUpRight, ArrowDownRight, Briefcase, FileSignature, Plus } from "lucide-react"
 import { MOCK_RFQS, MOCK_APPROVALS, MOCK_VENDORS, MOCK_INVOICES } from "@/lib/dummyData"
 import { useAuth } from "@/contexts/auth-context"
+import Link from "next/link"
 
 export default function Dashboard() {
   const { activeRole } = useAuth()
@@ -158,9 +159,9 @@ export default function Dashboard() {
           </p>
         </div>
         {activeRole !== "Vendor" && activeRole !== "Manager" && (
-          <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90">
+          <Link href="/vendors" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90">
             <Plus className="mr-2 h-4 w-4" /> Add Vendor
-          </button>
+          </Link>
         )}
       </div>
 

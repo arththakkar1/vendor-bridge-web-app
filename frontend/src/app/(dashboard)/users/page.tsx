@@ -1,18 +1,24 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { MOCK_USERS } from "@/lib/dummyData"
-import { Search, Plus, MoreHorizontal } from "lucide-react"
+import { Search, Plus, MoreHorizontal, X } from "lucide-react"
 
 export default function UsersPage() {
+  const [isAddOpen, setIsAddOpen] = useState(false)
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 relative">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
           <p className="text-muted-foreground mt-1">Manage internal system users and their roles.</p>
         </div>
-        <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90">
+        <button 
+          onClick={() => setIsAddOpen(true)}
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-10 px-4 py-2 hover:bg-primary/90"
+        >
           <Plus className="mr-2 h-4 w-4" /> Add User
         </button>
       </div>
@@ -67,6 +73,62 @@ export default function UsersPage() {
           </table>
         </div>
       </div>
+
+      {/* Add User Modal */}
+      <AnimatePresence>
+        {isAddOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card text-card-foreground border rounded-xl shadow-lg w-full max-w-md flex flex-col overflow-hidden"
+            >
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-xl font-semibold">Add New User</h2>
+                <button onClick={() => setIsAddOpen(false)} className="rounded-full p-1 hover:bg-muted"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Full Name</label>
+                  <input type="text" placeholder="e.g. Jane Doe" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email Address</label>
+                  <input type="email" placeholder="jane@example.com" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Role</label>
+                  <select className="w-full rounded-md border bg-background px-3 py-2 text-sm">
+                    <option>Admin</option>
+                    <option>Procurement Officer</option>
+                    <option>Manager</option>
+                    <option>Vendor</option>
+                  </select>
+                </div>
+                <div className="space-y-2 pt-2">
+                  <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                    <input type="checkbox" defaultChecked className="rounded border-gray-300 text-primary focus:ring-primary" />
+                    Set as Active User
+                  </label>
+                </div>
+              </div>
+              <div className="p-6 border-t flex justify-end gap-2 bg-muted/20">
+                <button onClick={() => setIsAddOpen(false)} className="rounded-md px-4 py-2 text-sm font-medium border hover:bg-accent">Cancel</button>
+                <button 
+                  onClick={() => {
+                    alert("Success! User created successfully.")
+                    setIsAddOpen(false)
+                  }} 
+                  className="rounded-md px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Create User
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
