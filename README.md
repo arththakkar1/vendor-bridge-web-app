@@ -2,13 +2,13 @@
 
 VendorBridge is a comprehensive Procurement & Vendor Management ERP system designed to digitize and streamline the procurement lifecycle for organizations. The platform centralizes vendor management, RFQ creation, quotation collection, approval workflows, purchase order generation, invoice management, and procurement analytics.
 
-## 📚 Documentation
+## Documentation
 
 This project uses the **Diátaxis documentation framework**, separating documentation into explanations, references, tutorials, and how-to guides.
 
-All architectural, technical, and conceptual documentation is located in the `doc/` directory. 
+All architectural, technical, and conceptual documentation is located in the `doc/` directory.
 
-👉 **[Start here: View Full Documentation Index](doc/README.md)**
+**[Start here: View Full Documentation Index](doc/README.md)**
 
 ## Tech Stack
 
