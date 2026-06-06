@@ -23,8 +23,9 @@ export default function ReportsAnalyticsPage() {
   // but using static summary text for those cards as they are illustrative in the UI
   // unless we want to build out a full vendor analytics backend.
 
-  const handleExport = () => {
-    alert("Report exported successfully!")
+  const handleExport = (type: 'procurement' | 'vendor-performance') => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+    window.open(`${baseUrl}/analytics/export/${type}`, '_blank');
   }
 
   return (
@@ -34,9 +35,14 @@ export default function ReportsAnalyticsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
           <p className="text-muted-foreground mt-1">View procurement trends, supplier performance, and spend analytics.</p>
         </div>
-        <button onClick={handleExport} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-          <Download className="mr-2 h-4 w-4" /> Export Report
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => handleExport('procurement')} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
+            <Download className="mr-2 h-4 w-4" /> Export Procurement
+          </button>
+          <button onClick={() => handleExport('vendor-performance')} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
+            <Download className="mr-2 h-4 w-4" /> Export Vendor Perf
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

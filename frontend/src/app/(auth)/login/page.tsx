@@ -35,10 +35,6 @@ export default function LoginPage() {
     handleLogin(email, password)
   }
 
-  const oneClickLogin = (roleEmail: string) => {
-    handleLogin(roleEmail, "password123")
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
       <div className="w-full max-w-md rounded-xl border bg-card p-8 shadow-sm">
@@ -101,28 +97,11 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or test accounts</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button disabled={isLoading} onClick={() => oneClickLogin("admin@vendorbridge.com")} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-            Admin
-          </button>
-          <button disabled={isLoading} onClick={() => oneClickLogin("officer@vendorbridge.com")} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-            Officer
-          </button>
-          <button disabled={isLoading} onClick={() => oneClickLogin("manager@vendorbridge.com")} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-            Manager
-          </button>
-          <button disabled={isLoading} onClick={() => oneClickLogin("vendor@infra-supplies.com")} className="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground">
-            Vendor
-          </button>
+        <div className="mt-6 text-center text-sm">
+          Don't have an account?{" "}
+          <Link href="/signup" className="text-primary hover:underline font-medium">
+            Sign up
+          </Link>
         </div>
       </div>
     </div>

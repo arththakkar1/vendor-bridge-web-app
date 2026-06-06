@@ -5,6 +5,6 @@ import { list } from './activity-logs.controller';
 
 const router = Router();
 router.use(authenticate);
-router.get('/', authorize(['ADMIN', 'OFFICER']), list);
+router.get('/', authorize(['ADMIN', 'OFFICER', 'MANAGER']), list);
 
 export default router;
