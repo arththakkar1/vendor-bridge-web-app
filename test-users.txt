@@ -1,0 +1,24 @@
+# VendorBridge Test Users
+
+You can use these credentials to log into the application across different roles.
+All users share the same default password.
+
+## Admin
+**Email:** admin@vendorbridge.com
+**Password:** password123
+**Role:** System Administrator
+
+## Procurement Officer
+**Email:** officer@vendorbridge.com
+**Password:** password123
+**Role:** Creates RFQs and reviews vendor quotations
+
+## Manager
+**Email:** manager@vendorbridge.com
+**Password:** password123
+**Role:** Final approval authority, triggers PO & Invoice generation
+
+## Vendor
+**Email:** vendor@infra-supplies.com
+**Password:** password123
+**Role:** Views RFQs and submits quotations (Linked to Vendor Profile: TechCore Supplies)
