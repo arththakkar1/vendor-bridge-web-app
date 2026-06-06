@@ -1,31 +1,35 @@
-import nodemailer from 'nodemailer';
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInvoiceEmail(opts: {
   to: string;
   invoiceNumber: string;
   pdfBuffer: Buffer;
 }): Promise<void> {
-  await transporter.sendMail({
-    from: `"VendorBridge" <${process.env.SMTP_USER}>`,
-    to: opts.to,
+  const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+
+  const recipient =
+    process.env.NODE_ENV === "development"
+      ? "mine.shubhamsingh@gmail.com"
+      : opts.to;
+
+  console.log(`[EMAIL] ${opts.to} -> ${recipient} (${process.env.NODE_ENV})`);
+
+  const { error } = await resend.emails.send({
+    from: `VendorBridge <${fromEmail}>`,
+    to: recipient,
     subject: `Invoice ${opts.invoiceNumber} from VendorBridge`,
     text: `Please find attached your invoice ${opts.invoiceNumber}.`,
     attachments: [
       {
         filename: `${opts.invoiceNumber}.pdf`,
         content: opts.pdfBuffer,
-        contentType: 'application/pdf',
       },
     ],
   });
+
+  if (error) {
+    throw new Error(`Failed to send email via Resend: ${error.message}`);
+  }
 }
