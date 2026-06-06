@@ -494,18 +494,18 @@ RFQ → Quotation → Approval → Purchase Order
 
 ## Frontend
 
-- Next.js 15
-- TypeScript
+- Next.js (TypeScript)
 - Tailwind CSS
+- Framer Motion (motion)
 - shadcn/ui
-- React Query
+- TanStack Query (React Query)
 - React Hook Form
 - Zod
 
 ## Backend
 
-- Django
-- Django REST Framework
+- Node.js
+- Express / NestJS
 - JWT Authentication
 
 ## Database
@@ -529,7 +529,7 @@ RFQ → Quotation → Approval → Purchase Order
 ## Deployment
 
 - Frontend: Vercel
-- Backend: Railway / Render
+- Backend: Railway / Render / Heroku
 - Database: PostgreSQL
 
 ---
